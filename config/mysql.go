@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	_mUser "newsapi/features/users/data"
 	"os"
 
 	"gorm.io/driver/mysql"
@@ -31,5 +32,5 @@ func InitDB() *gorm.DB {
 }
 
 func InitMigrate(db *gorm.DB) {
-
+	db.AutoMigrate(&_mUser.User{})
 }
