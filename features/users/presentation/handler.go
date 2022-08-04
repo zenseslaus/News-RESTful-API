@@ -3,6 +3,7 @@ package presentation
 import (
 	"net/http"
 	"newsapi/features/users"
+	"newsapi/helpers"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -39,5 +40,26 @@ func (hand *UserHandler) GetUserProfile() gin.HandlerFunc {
 			"message": "success",
 			"data":    FromCore(result),
 		})
+	}
+}
+
+func (hand *UserHandler) PostNewUser() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var dataReq InsertUser
+		errBind := c.Bind(&dataReq)
+		if errBind != nil {
+			c.JSON(http.StatusBadRequest, helpers.ResponseFailed("error bind"))
+			return
+		}
+		row, err := hand.userBusiness.PostUser(dataReq.ToCore())
+		if row == 0 {
+			c.JSON(http.StatusInternalServerError, helpers.ResponseFailed("failed to insert data"))
+			return
+		}
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, helpers.ResponseFailed("failed to insert data"))
+			return
+		}
+		c.JSON(http.StatusOK, helpers.ResponseSuccesNoData("success"))
 	}
 }
