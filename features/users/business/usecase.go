@@ -16,3 +16,8 @@ func (uc *userUsecase) GetProfile(idUser int) (users.Core, error) {
 	result, err := uc.userData.SelectProfile(idUser)
 	return result, err
 }
+
+func (uc *userUsecase) PostUser(input users.Core) (int, error) {
+	row, err := uc.userData.InsertUser(input)
+	return row, err
+}

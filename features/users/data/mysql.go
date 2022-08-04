@@ -2,6 +2,7 @@ package data
 
 import (
 	"newsapi/features/users"
+	"newsapi/plugins"
 
 	"gorm.io/gorm"
 )
@@ -23,4 +24,15 @@ func (repo *mysqlUserRepository) SelectProfile(idUser int) (users.Core, error) {
 		return users.Core{}, result.Error
 	}
 	return data.toCore(), nil
+}
+
+func (repo *mysqlUserRepository) InsertUser(input users.Core) (int, error) {
+	var newPass, _ = plugins.HashPassword(input.Password)
+	input.Password = newPass
+	var data = fromCore(input)
+	result := repo.db.Create(&data)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return 1, nil
 }
