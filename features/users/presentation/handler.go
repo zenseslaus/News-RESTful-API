@@ -18,6 +18,13 @@ func NewUserHandler(business users.Business) users.Handler {
 		userBusiness: business,
 	}
 }
+func (hand *UserHandler) Login() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var login LoginUser
+		idUser := hand.userBusiness.LoginUser(login.Email, login.Password)
+		c.JSON(http.StatusOK, helpers.ResponseSuccesWithData("success", idUser))
+	}
+}
 
 func (hand *UserHandler) GetUserProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {

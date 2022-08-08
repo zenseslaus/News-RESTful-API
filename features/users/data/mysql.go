@@ -17,6 +17,18 @@ func NewUserData(conn *gorm.DB) users.Data {
 	}
 }
 
+func (repo *mysqlUserRepository) LoginUser(email, password string) (idUser int) {
+	var data User
+	result := repo.db.First(&data, "email = ?", email)
+	if result.Error != nil {
+		return 0
+	}
+	if !plugins.CheckPasswordHash(password, data.Password) {
+		return 0
+	}
+	return int(data.ID)
+}
+
 func (repo *mysqlUserRepository) SelectProfile(idUser int) (users.Core, error) {
 	var data User
 	result := repo.db.First(&data, "id = ?", idUser)

@@ -19,14 +19,17 @@ type Core struct {
 type Handler interface {
 	GetUserProfile() gin.HandlerFunc
 	PostNewUser() gin.HandlerFunc
+	Login() gin.HandlerFunc
 }
 
 type Business interface {
 	GetProfile(idUser int) (data Core, err error)
 	PostUser(data Core) (row int, err error)
+	LoginUser(email, password string) (idUser int)
 }
 
 type Data interface {
 	SelectProfile(idUser int) (data Core, err error)
 	InsertUser(data Core) (row int, err error)
+	LoginUser(email, password string) (idUser int)
 }

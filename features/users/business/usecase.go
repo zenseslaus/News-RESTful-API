@@ -1,6 +1,8 @@
 package business
 
-import "newsapi/features/users"
+import (
+	"newsapi/features/users"
+)
 
 type userUsecase struct {
 	userData users.Data
@@ -10,6 +12,10 @@ func NewUserBusiness(data users.Data) users.Business {
 	return &userUsecase{
 		userData: data,
 	}
+}
+
+func (uc *userUsecase) LoginUser(email, password string) int {
+	return uc.userData.LoginUser(email, password)
 }
 
 func (uc *userUsecase) GetProfile(idUser int) (users.Core, error) {

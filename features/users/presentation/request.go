@@ -9,6 +9,11 @@ type InsertUser struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type LoginUser struct {
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
 func (data *InsertUser) ToCore() users.Core {
 	return users.Core{
 		FullName: data.FullName,
