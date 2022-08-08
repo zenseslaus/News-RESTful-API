@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"newsapi/features/users"
 	"newsapi/helpers"
-	"strconv"
+	"newsapi/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,22 +21,26 @@ func NewUserHandler(business users.Business) users.Handler {
 func (hand *UserHandler) Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var login LoginUser
-		idUser := hand.userBusiness.LoginUser(login.Email, login.Password)
-		c.JSON(http.StatusOK, helpers.ResponseSuccesWithData("success", idUser))
+		errBind := c.Bind(&login)
+		if errBind != nil {
+			c.JSON(http.StatusBadRequest, helpers.ResponseFailed("error bind"))
+			return
+		}
+		token := hand.userBusiness.LoginUser(login.Email, login.Password)
+		c.JSON(http.StatusOK, helpers.ResponseSuccesWithData("success", token))
 	}
 }
 
 func (hand *UserHandler) GetUserProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		id := c.Param("idUser")
-		idInt, errId := strconv.Atoi(id)
+		idUser, errId := middlewares.ExtractToken(*c)
 		if errId != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "error bind",
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed token",
 			})
 			return
 		}
-		result, err := hand.userBusiness.GetProfile(idInt)
+		result, err := hand.userBusiness.GetProfile(idUser)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "failed to get data",

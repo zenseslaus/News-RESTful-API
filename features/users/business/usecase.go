@@ -14,7 +14,7 @@ func NewUserBusiness(data users.Data) users.Business {
 	}
 }
 
-func (uc *userUsecase) LoginUser(email, password string) int {
+func (uc *userUsecase) LoginUser(email, password string) string {
 	return uc.userData.LoginUser(email, password)
 }
 

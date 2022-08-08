@@ -2,6 +2,7 @@ package data
 
 import (
 	"newsapi/features/users"
+	"newsapi/middlewares"
 	"newsapi/plugins"
 
 	"gorm.io/gorm"
@@ -17,16 +18,20 @@ func NewUserData(conn *gorm.DB) users.Data {
 	}
 }
 
-func (repo *mysqlUserRepository) LoginUser(email, password string) (idUser int) {
+func (repo *mysqlUserRepository) LoginUser(email, password string) string {
 	var data User
 	result := repo.db.First(&data, "email = ?", email)
 	if result.Error != nil {
-		return 0
+		return ""
 	}
 	if !plugins.CheckPasswordHash(password, data.Password) {
-		return 0
+		return ""
 	}
-	return int(data.ID)
+	token, errToken := middlewares.CreateToken(int(data.ID))
+	if errToken != nil {
+		return ""
+	}
+	return token
 }
 
 func (repo *mysqlUserRepository) SelectProfile(idUser int) (users.Core, error) {
